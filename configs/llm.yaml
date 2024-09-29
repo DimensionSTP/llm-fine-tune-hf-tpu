@@ -1,0 +1,48 @@
+# @package _global_
+defaults:
+  - dataset: llm_structural_dataset
+  - optimizer: optimizer
+  - scheduler: cosine_custom_scheduler
+  - preparation: preparation
+
+package_name: llm-fine-tune-hf-tpu
+project_dir: ${oc.env:PROJECT_DIR}/${package_name}
+connected_dir: ${oc.env:CONNECTED_DIR}/${package_name}
+
+mode: train
+
+model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+model_path: ${oc.env:HF_HOME}/${model_name}
+
+split_ratio: 1e-6
+seed: 2024
+instruction_column_name: instruction
+data_column_name: input
+target_column_name: response
+max_length: 2048
+padding_side: right
+
+lr: 3e-5
+weight_decay: 0.1
+warmup_ratio: 5e-2
+eta_min_ratio: 1e-2
+
+bf16: True
+max_grad_norm: 1.0
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 32
+tpu_num_cores: 32
+fsdp: full_shard
+fsdp_min_num_params: 1e8
+evaluation_strategy: epoch
+num_train_epochs: 5
+output_dir: ${connected_dir}/checkpoints
+save_strategy: steps
+save_steps: 1000
+save_total_limit: None
+logging_strategy: steps
+logging_steps: 10
+logging_dir: ${connected_dir}/logs
+report_to: wandb
+push_to_hub: False

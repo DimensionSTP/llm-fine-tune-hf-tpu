@@ -1,0 +1,10 @@
+_target_: src.datasets.llm_dataset.StructuralDataset
+data_path: ${connected_dir}/data
+split_ratio: ${split_ratio}
+seed: ${seed}
+instruction_column_name: ${instruction_column_name}
+data_column_name: ${data_column_name}
+target_column_name: ${target_column_name}
+max_length: ${max_length}
+model_path: ${model_path}
+padding_side: ${padding_side}

@@ -1,0 +1,4 @@
+_target_: src.schedulers.cosine_scheduler.CustomScheduler
+lr: ${lr}
+warmup_ratio: ${warmup_ratio}
+eta_min_ratio: ${eta_min_ratio}
