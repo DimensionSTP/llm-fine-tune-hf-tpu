@@ -20,7 +20,7 @@ from src.pipelines.pipeline import train
 
 @hydra.main(
     config_path="configs/",
-    config_name="huggingface.yaml",
+    config_name="llm.yaml",
 )
 def main(
     config: DictConfig,
