@@ -42,7 +42,8 @@ def train(
 
     setup = SetUp(config)
 
-    dataset = setup.get_dataset()
+    dataloader = setup.get_dataloader()
+    dataset = dataloader()
     train_dataset = dataset["train"]
     eval_dataset = dataset["eval"]
 
