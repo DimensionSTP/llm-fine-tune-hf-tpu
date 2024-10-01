@@ -11,11 +11,11 @@ class SetUp:
     ) -> None:
         self.config = config
 
-    def get_dataset(self) -> object:
-        dataset: object = instantiate(
-            self.config.dataset,
+    def get_dataloader(self) -> object:
+        dataloader: object = instantiate(
+            self.config.dataloader,
         )
-        return dataset
+        return dataloader
 
     def get_training_arguments(self) -> TrainingArguments:
         training_arguments: TrainingArguments = instantiate(

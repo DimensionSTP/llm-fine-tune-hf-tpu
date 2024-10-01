@@ -1,4 +1,4 @@
-_target_: src.datasets.llm_dataset.StructuralDataset
+_target_: src.dataloaders.llm_dataloader.StructuralDataLoader
 data_path: ${connected_dir}/data
 split_ratio: ${split_ratio}
 seed: ${seed}

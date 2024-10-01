@@ -7,7 +7,7 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 
 
-class StructuralDataset:
+class StructuralDataLoader:
     def __init__(
         self,
         data_path: str,
@@ -39,7 +39,7 @@ class StructuralDataset:
         dataset = load_dataset(
             "parquet",
             data_files={
-                "train": self.data_path,
+                "train": f"{self.data_path}/train.parquet",
             },
         )["train"]
         train_test_split = dataset.train_test_split(
@@ -77,7 +77,7 @@ class StructuralDataset:
 {instruction}
 
 ### Input:
-{input.strip()}
+{input}
 
 ### Response:
 {response}""".strip()
