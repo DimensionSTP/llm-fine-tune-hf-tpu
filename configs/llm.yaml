@@ -1,10 +1,10 @@
 # @package _global_
 defaults:
-  - dataset: llm_structural_dataset
+  - dataloader: llm_structural_dataloader
   - scheduler: cosine_custom_scheduler
   - preparation: preparation
 
-package_name: llm-fine-tune-hf-tpu
+package_name: llm-korean-fine-tune
 project_dir: ${oc.env:PROJECT_DIR}/${package_name}
 connected_dir: ${oc.env:CONNECTED_DIR}/${package_name}
 
