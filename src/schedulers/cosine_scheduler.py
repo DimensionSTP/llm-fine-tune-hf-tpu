@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 from torch import optim
 
 
@@ -13,14 +11,15 @@ class CustomScheduler:
         self.lr = lr
         self.warmup_ratio = warmup_ratio
         self.eta_min_ratio = eta_min_ratio
+        self.warmup_steps = None
 
     def __call__(
         self,
         total_steps: int,
         optimizer: optim.AdamW,
     ):
-        warmup_steps = int(total_steps * self.warmup_ratio)
-        t_max = total_steps - warmup_steps
+        self.warmup_steps = int(total_steps * self.warmup_ratio)
+        t_max = total_steps - self.warmup_steps
         eta_min = self.lr * self.eta_min_ratio
 
         warmup_scheduler = optim.lr_scheduler.LambdaLR(
@@ -39,7 +38,7 @@ class CustomScheduler:
                 main_scheduler,
             ],
             milestones=[
-                warmup_steps,
+                self.warmup_steps,
             ],
         )
         return scheduler
@@ -47,8 +46,7 @@ class CustomScheduler:
     def lr_lambda(
         self,
         current_step: int,
-        warmup_steps: int,
     ):
-        if current_step < warmup_steps:
-            return float(current_step) / float(max(1, warmup_steps))
+        if current_step < self.warmup_steps:
+            return float(current_step) / float(max(1, self.warmup_steps))
         return 1.0
