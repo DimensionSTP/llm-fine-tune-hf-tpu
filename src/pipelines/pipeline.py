@@ -15,9 +15,9 @@ from ..utils.setup import SetUp
 def train(
     config: DictConfig,
 ) -> None:
-    os.environ["WANDB_PROJECT"] = f"{config.model_detail}-{config.mode}"
+    os.environ["WANDB_PROJECT"] = f"{config.model_type}-{config.mode}"
     os.environ["WANDB_NAME"] = (
-        f"{config.model_detail}-max_length=${config.max_length}-lr{config.lr}"
+        f"{config.model_type}-max_length=${config.max_length}-lr{config.lr}"
     )
 
     data_encoder = AutoTokenizer.from_pretrained(

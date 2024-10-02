@@ -11,8 +11,8 @@ connected_dir: ${oc.env:CONNECTED_DIR}/llm-korean-fine-tune
 mode: train
 
 upload_user: meta-llama
-model_detail: Meta-Llama-3.1-8B-Instruct
-model_name: ${upload_user}/${model_detail}
+model_type: Meta-Llama-3.1-8B-Instruct
+model_name: ${upload_user}/${model_type}
 model_path: ${oc.env:HF_HOME}/${model_name}
 
 split_ratio: 1e-6
