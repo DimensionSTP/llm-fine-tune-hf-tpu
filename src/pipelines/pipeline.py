@@ -5,12 +5,9 @@ from omegaconf import DictConfig
 
 import torch
 from torch import optim
+import torch_xla.core.xla_model as xm
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer
-
-from accelerate import Accelerator
-
-import wandb
 
 from ..utils.setup import SetUp
 
@@ -18,15 +15,18 @@ from ..utils.setup import SetUp
 def train(
     config: DictConfig,
 ) -> None:
-    os.environ["WANDB_PROJECT"] = f"{config.model_name}-{config.mode}"
+    os.environ["WANDB_PROJECT"] = f"{config.model_detail}-{config.mode}"
     os.environ["WANDB_NAME"] = (
-        f"{config.model_name}-max_length=${config.max_length}-lr{config.lr}"
+        f"{config.model_detail}-max_length=${config.max_length}-lr{config.lr}"
     )
 
     data_encoder = AutoTokenizer.from_pretrained(
         config.model_path,
         use_fast=True,
     )
+    if data_encoder.pad_token_id is None:
+        data_encoder.pad_token_id = data_encoder.eos_token_id
+    data_encoder.padding_side = config.padding_side
 
     if config.bf16 == True:
         precision = torch.bfloat16
@@ -38,7 +38,7 @@ def train(
         output_hidden_states=False,
         torch_dtype=precision,
         device_map="auto",
-    )
+    ).to(xm.xla_device())
 
     setup = SetUp(config)
 
@@ -72,8 +72,6 @@ def train(
         optimizer=optimizer,
     )
 
-    accelerator = Accelerator()
-
     trainer = Trainer(
         model=model,
         args=training_arguments,
@@ -84,7 +82,6 @@ def train(
             optimizer,
             scheduler,
         ),
-        accelerator=accelerator,
     )
 
     trainer.train()
