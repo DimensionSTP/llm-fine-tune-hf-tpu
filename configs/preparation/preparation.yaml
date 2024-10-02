@@ -6,7 +6,7 @@ per_device_eval_batch_size: ${per_device_eval_batch_size}
 gradient_accumulation_steps: ${gradient_accumulation_steps}
 tpu_num_cores: ${tpu_num_cores}
 fsdp: ${fsdp}
-fsdp_min_num_params: ${fsdp_min_num_params}
+fsdp_config: ${fsdp_config}
 evaluation_strategy: ${evaluation_strategy}
 num_train_epochs: ${num_train_epochs}
 output_dir: ${output_dir}

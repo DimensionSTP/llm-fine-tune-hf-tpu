@@ -35,7 +35,6 @@ per_device_eval_batch_size: 4
 gradient_accumulation_steps: 32
 tpu_num_cores: 32
 fsdp: full_shard
-fsdp_min_num_params: 1e8
 fsdp_config: ${project_dir}/configs/fsdp_config.json
 evaluation_strategy: epoch
 num_train_epochs: 5
