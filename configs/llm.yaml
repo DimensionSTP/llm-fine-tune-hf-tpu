@@ -4,13 +4,15 @@ defaults:
   - scheduler: cosine_custom_scheduler
   - preparation: preparation
 
-package_name: llm-korean-fine-tune
+package_name: llm-fine-tune-hf-tpu
 project_dir: ${oc.env:PROJECT_DIR}/${package_name}
-connected_dir: ${oc.env:CONNECTED_DIR}/${package_name}
+connected_dir: ${oc.env:CONNECTED_DIR}/llm-korean-fine-tune
 
 mode: train
 
-model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+upload_user: meta-llama
+model_detail: Meta-Llama-3.1-8B-Instruct
+model_name: ${upload_user}/${model_detail}
 model_path: ${oc.env:HF_HOME}/${model_name}
 
 split_ratio: 1e-6
@@ -34,6 +36,7 @@ gradient_accumulation_steps: 32
 tpu_num_cores: 32
 fsdp: full_shard
 fsdp_min_num_params: 1e8
+fsdp_config: ${project_dir}/configs/fsdp_config.json
 evaluation_strategy: epoch
 num_train_epochs: 5
 output_dir: ${connected_dir}/checkpoints
