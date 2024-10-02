@@ -51,17 +51,19 @@ class StructuralDataLoader:
         eval_dataset = train_test_split["test"]
 
         tokenized_train_dataset = train_dataset.map(
-            lambda examples: self.preprocess_function(
-                examples,
+            lambda datas: self.preprocess_function(
+                datas,
             ),
             batched=True,
         )
+        tokenized_train_dataset = tokenized_train_dataset.map(self.add_labels)
         tokenized_eval_dataset = eval_dataset.map(
-            lambda examples: self.preprocess_function(
-                examples,
+            lambda datas: self.preprocess_function(
+                datas,
             ),
             batched=True,
         )
+        tokenized_eval_dataset = tokenized_eval_dataset.map(self.add_labels)
         return {
             "train": tokenized_train_dataset,
             "eval": tokenized_eval_dataset,
@@ -85,7 +87,7 @@ class StructuralDataLoader:
 
     def preprocess_function(
         self,
-        examples: Any,
+        datas: Any,
     ) -> Dict[str, torch.Tensor]:
         prompts = [
             self.generate_prompt(
@@ -94,9 +96,9 @@ class StructuralDataLoader:
                 response,
             )
             for instruction, input, response in zip(
-                examples[self.instruction_column_name],
-                examples[self.data_column_name],
-                examples[self.target_column_name],
+                datas[self.instruction_column_name],
+                datas[self.data_column_name],
+                datas[self.target_column_name],
             )
         ]
         return self.data_encoder(
@@ -107,3 +109,10 @@ class StructuralDataLoader:
             return_tensors="pt",
             add_special_tokens=True,
         )
+
+    def add_labels(
+        self,
+        datas: Dict[str, list],
+    ) -> Dict[str, list]:
+        datas["labels"] = datas["input_ids"].copy()
+        return datas
