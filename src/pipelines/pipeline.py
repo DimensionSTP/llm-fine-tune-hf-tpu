@@ -70,6 +70,7 @@ def train(
         fsdp_model=fsdp_model,
         optimizer=optimizer,
         scheduler=scheduler,
+        model=model,
         args=training_arguments,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,

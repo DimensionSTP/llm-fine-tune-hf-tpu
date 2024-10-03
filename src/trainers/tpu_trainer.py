@@ -3,7 +3,6 @@ from typing import Dict, Union, Any
 import torch
 from torch import nn
 from torch_xla.core import xla_model as xm
-from torch_xla.distributed.fsdp import XlaFullyShardedDataParallel as FSDP
 
 from transformers import Trainer
 
@@ -30,15 +29,16 @@ class FSDPTrainer(Trainer):
         model: nn.Module,
         inputs: Dict[str, Union[torch.Tensor, Any]],
     ) -> torch.Tensor:
-        model.train()
+        self.fsdp_model.train()
+        model = self.fsdp_model.to(xm.xla_device())
 
         inputs = self._prepare_inputs(inputs)
 
-        if isinstance(model, FSDP):
-            model = model.to(xm.xla_device())
-
         with self.compute_loss_context_manager():
-            loss = self.compute_loss(model, inputs)
+            loss = self.compute_loss(
+                model,
+                inputs,
+            )
         loss = loss / self.args.gradient_accumulation_steps
         loss.backward()
 
