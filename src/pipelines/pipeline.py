@@ -32,7 +32,7 @@ def train(
     model = AutoModelForCausalLM.from_pretrained(
         config.model_path,
         output_hidden_states=False,
-        torch_dtype=torch.bfloat16,
+        torch_dtype=torch.float32,
     )
 
     setup = SetUp(config)
