@@ -44,7 +44,7 @@ def train(
     training_arguments = setup.get_training_arguments()
 
     optimizer = optim.AdamW(
-        model.parameters(),
+        fsdp_model.parameters(),
         lr=config.lr,
         weight_decay=config.weight_decay,
     )
