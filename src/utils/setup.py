@@ -3,8 +3,6 @@ from hydra.utils import instantiate
 
 from torch.utils.data import Dataset
 
-from transformers import TrainingArguments
-
 
 class SetUp:
     def __init__(
@@ -26,12 +24,6 @@ class SetUp:
             split=self.config.split.val,
         )
         return val_dataset
-
-    def get_training_arguments(self) -> TrainingArguments:
-        training_arguments: TrainingArguments = instantiate(
-            self.config.preparation,
-        )
-        return training_arguments
 
     def get_scheduler(self) -> object:
         scheduler: object = instantiate(

@@ -5,12 +5,12 @@ from omegaconf import DictConfig
 
 import torch
 from torch import optim
-from torch_xla.distributed.fsdp import XlaFullyShardedDataParallel as FSDP
+from torch.utils.data import DataLoader
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from ..utils.setup import SetUp
-from ..trainers.tpu_trainer import FSDPTrainer
+from ..utils.train_loop import train_loop
 
 
 def train(
@@ -32,32 +32,42 @@ def train(
     model = AutoModelForCausalLM.from_pretrained(
         config.model_path,
         output_hidden_states=False,
-        torch_dtype=torch.float32,
+        torch_dtype=torch.bfloat16,
     )
-    fsdp_model = FSDP(model)
 
     setup = SetUp(config)
 
     train_dataset = setup.get_train_dataset()
-    eval_dataset = setup.get_val_dataset()
+    val_dataset = setup.get_val_dataset()
 
-    training_arguments = setup.get_training_arguments()
+    train_loader = DataLoader(
+        dataset=train_dataset,
+        batch_size=config.per_device_train_batch_size,
+        shuffle=True,
+        pin_memory=True,
+    )
+
+    val_loader = DataLoader(
+        dataset=val_dataset,
+        batch_size=config.per_device_eval_batch_size,
+        shuffle=False,
+        pin_memory=True,
+    )
 
     optimizer = optim.AdamW(
-        fsdp_model.parameters(),
+        model.parameters(),
         lr=config.lr,
         weight_decay=config.weight_decay,
     )
 
     num_train_samples = len(train_dataset)
     effective_batch_size = (
-        training_arguments.per_device_train_batch_size
-        * training_arguments.gradient_accumulation_steps
-        * training_arguments.tpu_num_cores
+        config.per_device_train_batch_size
+        * config.gradient_accumulation_steps
+        * config.tpu_num_cores
     )
     total_steps = (
-        math.ceil(num_train_samples / effective_batch_size)
-        * training_arguments.num_train_epochs
+        math.ceil(num_train_samples / effective_batch_size) * config.num_train_epochs
     )
 
     custom_scheduler = setup.get_scheduler()
@@ -66,19 +76,11 @@ def train(
         optimizer=optimizer,
     )
 
-    trainer = FSDPTrainer(
-        fsdp_model=fsdp_model,
+    train_loop(
+        config=config,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        model=model,
         optimizer=optimizer,
         scheduler=scheduler,
-        model=model,
-        args=training_arguments,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        tokenizer=data_encoder,
-        optimizers=(
-            None,
-            None,
-        ),
     )
-
-    trainer.train()
