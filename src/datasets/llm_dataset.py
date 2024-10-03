@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 
 
-class LLMKoreanDataset(Dataset):
+class StructuralDataset(Dataset):
     def __init__(
         self,
         data_path: str,
