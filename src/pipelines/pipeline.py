@@ -29,15 +29,10 @@ def train(
         data_encoder.pad_token_id = data_encoder.eos_token_id
     data_encoder.padding_side = config.padding_side
 
-    if config.bf16 == True:
-        precision = torch.bfloat16
-    else:
-        precision = torch.float16
-
     model = AutoModelForCausalLM.from_pretrained(
         config.model_path,
         output_hidden_states=False,
-        torch_dtype=precision,
+        torch_dtype=torch.float32,
     )
     fsdp_model = FSDP(model)
 
