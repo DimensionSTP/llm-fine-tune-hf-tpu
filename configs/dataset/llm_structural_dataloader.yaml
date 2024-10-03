@@ -1,5 +1,6 @@
-_target_: src.dataloaders.llm_dataloader.StructuralDataLoader
+_target_: src.datasets.llm_dataset.StructuralDataset
 data_path: ${connected_dir}/data
+split: ${split.train}
 split_ratio: ${split_ratio}
 seed: ${seed}
 instruction_column_name: ${instruction_column_name}
