@@ -5,11 +5,12 @@ from omegaconf import DictConfig
 
 import torch
 from torch import optim
-import torch_xla.core.xla_model as xm
+from torch_xla.distributed.fsdp import XlaFullyShardedDataParallel as FSDP
 
-from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from ..utils.setup import SetUp
+from ..trainers.tpu_trainer import FSDPTrainer
 
 
 def train(
@@ -37,8 +38,8 @@ def train(
         config.model_path,
         output_hidden_states=False,
         torch_dtype=precision,
-        device_map="auto",
-    ).to(xm.xla_device())
+    )
+    fsdp_model = FSDP(model)
 
     setup = SetUp(config)
 
@@ -70,15 +71,17 @@ def train(
         optimizer=optimizer,
     )
 
-    trainer = Trainer(
-        model=model,
+    trainer = FSDPTrainer(
+        fsdp_model=fsdp_model,
+        optimizer=optimizer,
+        scheduler=scheduler,
         args=training_arguments,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         tokenizer=data_encoder,
         optimizers=(
-            optimizer,
-            scheduler,
+            None,
+            None,
         ),
     )
 
