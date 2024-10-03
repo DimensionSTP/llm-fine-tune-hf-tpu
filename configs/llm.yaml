@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - dataloader: llm_structural_dataloader
+  - dataset: llm_structural_dataset
   - scheduler: cosine_custom_scheduler
   - preparation: preparation
 
@@ -15,7 +15,11 @@ model_type: Meta-Llama-3.1-8B-Instruct
 model_name: ${upload_user}/${model_type}
 model_path: ${oc.env:HF_HOME}/${model_name}
 
-split_ratio: 1e-6
+split:
+  train: train
+  val: val
+
+split_ratio: 1e-4
 seed: 2024
 instruction_column_name: instruction
 data_column_name: input
