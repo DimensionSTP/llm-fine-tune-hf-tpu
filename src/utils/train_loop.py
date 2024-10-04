@@ -7,10 +7,9 @@ from torch.utils.data import DataLoader
 from torch import optim
 
 from torch_xla.core import xla_model as xm
-from torch_xla.distributed import fsdp
 from torch_xla.distributed import parallel_loader
 from torch_xla.distributed.fsdp import XlaFullyShardedDataParallel as FSDP
-from torch_xla.distributed.fsdp.wrap import wrap, ModuleWrapPolicy
+from torch_xla.distributed.fsdp.wrap import ModuleWrapPolicy
 
 from transformers import AutoModelForCausalLM
 
