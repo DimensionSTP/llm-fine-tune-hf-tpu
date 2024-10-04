@@ -96,6 +96,11 @@ def train_loop(
                 train_loader
             ):
                 try:
+                    torch.nn.utils.clip_grad_norm_(
+                        fsdp_model.parameters(),
+                        config.max_grad_norm,
+                    )
+
                     xm.optimizer_step(optimizer)
                     scheduler.step()
                     optimizer.zero_grad()
