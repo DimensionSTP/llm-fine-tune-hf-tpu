@@ -9,7 +9,6 @@ from torch import optim
 from torch_xla.core import xla_model as xm
 from torch_xla.distributed import parallel_loader
 from torch_xla.distributed.fsdp import XlaFullyShardedDataParallel as FSDP
-from torch_xla.distributed.fsdp.wrap import ModuleWrapPolicy
 
 from transformers import AutoModelForCausalLM
 
@@ -49,10 +48,7 @@ def train_loop(
 
     xm.rendezvous("before_fsdp")
     try:
-        fsdp_model = FSDP(
-            model,
-            policy=ModuleWrapPolicy({torch.nn.Embedding}),
-        ).to(device)
+        fsdp_model = FSDP(model.to(device))
         print("Model successfully wrapped with FSDP.")
     except Exception as e:
         print(f"Error in FSDP wrapping: {e}")
