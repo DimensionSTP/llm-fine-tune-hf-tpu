@@ -76,7 +76,8 @@ def train_loop(
 
         for step, inputs in enumerate(train_loader):
             if "input_ids" not in inputs or inputs["input_ids"].size(0) == 0:
-                print(f"Warning: Empty batch or missing 'input_ids' at step {step}")
+                if step == 0:
+                    print(f"Warning: Empty batch or missing 'input_ids'")
                 continue
 
             try:
@@ -87,7 +88,8 @@ def train_loop(
 
                 accumulation_loss += loss.item()
             except Exception as e:
-                print(f"Error during forward/backward pass at step {step + 1}: {e}")
+                if step == 0:
+                    print(f"Error during forward/backward pass")
                 continue
 
             if (step + 1) % gradient_accumulation_steps == 0 or (step + 1) == len(
