@@ -2,7 +2,6 @@
 defaults:
   - dataset: llm_structural_dataset
   - scheduler: cosine_custom_scheduler
-  - preparation: preparation
 
 package_name: llm-fine-tune-hf-tpu
 project_dir: ${oc.env:PROJECT_DIR}/${package_name}
