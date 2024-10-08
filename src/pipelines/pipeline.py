@@ -7,6 +7,8 @@ import torch
 from torch import optim
 from torch.utils.data import DataLoader
 
+from torch_xla.distributed import xla_multiprocessing as xmp
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from ..utils.setup import SetUp
@@ -32,7 +34,7 @@ def train(
     model = AutoModelForCausalLM.from_pretrained(
         config.model_path,
         output_hidden_states=False,
-        torch_dtype=torch.float32,
+        torch_dtype=torch.bfloat16,
     )
 
     setup = SetUp(config)
@@ -69,6 +71,7 @@ def train(
     total_steps = (
         math.ceil(num_train_samples / effective_batch_size) * config.num_train_epochs
     )
+    print(f"Total steps: {total_steps}, Effective batch size: {effective_batch_size}")
 
     custom_scheduler = setup.get_scheduler()
     scheduler = custom_scheduler(
@@ -76,11 +79,13 @@ def train(
         optimizer=optimizer,
     )
 
-    train_loop(
-        config=config,
-        train_loader=train_loader,
-        val_loader=val_loader,
-        model=model,
-        optimizer=optimizer,
-        scheduler=scheduler,
+    xmp.spawn(
+        train_loop(
+            config=config,
+            train_loader=train_loader,
+            val_loader=val_loader,
+            model=model,
+            optimizer=optimizer,
+            scheduler=scheduler,
+        )
     )
