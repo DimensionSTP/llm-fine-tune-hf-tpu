@@ -1,6 +1,6 @@
-# Korean (s)LLM model fine-tuning pipeline
+# Korean (s)LLM model fine-tuning TPU pods pipeline using XLA
 
-## For (s)LLM model fine-tuning
+## For (s)LLM model fine-tuning TPU pods
 
 ### Dataset
 HuggingFace Korean dataset(preprocessed as system_prompt, instruction, and output)
@@ -9,11 +9,11 @@ HuggingFace Korean dataset(preprocessed as system_prompt, instruction, and outpu
 
 ```bash
 # clone project
-git clone https://github.com/DimensionSTP/llm-fine-tune-hf-tpu.git
-cd llm-fine-tune-hf-tpu
+git clone https://github.com/DimensionSTP/llm-fine-tune-tpu.git
+cd llm-fine-tune-tpu
 
 # [OPTIONAL] create conda environment
-conda create -n myenv python=3.8
+conda create -n myenv python=3.10
 conda activate myenv
 
 # install requirements
@@ -32,7 +32,7 @@ USER_NAME={USER_NAME}
 
 * end-to-end
 ```shell
-python main.py mode=train is_tuned={tuned or untuned} num_trials={num_trials}
+python main.py mode=train
 ```
 
 ### Examples of shell scipts
