@@ -11,6 +11,7 @@ from torch_xla.core import xla_model as xm
 from torch_xla.distributed import parallel_loader
 from torch_xla.experimental.xla_sharding import Mesh
 from torch_xla.experimental import xla_sharding as xs
+from torch_xla.utils import serialization as xser
 
 from transformers import AutoModelForCausalLM
 
@@ -140,24 +141,18 @@ def train_loop(
                         accumulation_loss = 0.0
 
                     if global_step % config.save_steps == 0:
-                        xm.rendezvous(f"saving checkpoint-{global_step}")
-                        model_state = model.state_dict()
-                        xm.all_reduce(
-                            "sum",
-                            model_state,
-                        )
+                        xm.rendezvous(f"saving checkpoint-{global_step}.pt")
                         if xm.is_master_ordinal():
-                            cpu_model = model.cpu()
-                            cpu_model.load_state_dict(model_state)
-                            cpu_model.save_pretrained(
-                                f"{config.output_dir}/checkpoint-{global_step}"
+                            xser.save(
+                                model.state_dict(),
+                                f"saving checkpoint-{global_step}.pt",
                             )
-                        xm.master_print(
+                        xm.rendezvous(
                             f"checkpoint-{global_step} saved at {config.output_dir}"
                         )
 
                 except Exception as e:
-                    xm.master_print(
+                    xm.rendezvous(
                         f"Error during optimizer step at step {global_step}: {e}"
                     )
                     continue
