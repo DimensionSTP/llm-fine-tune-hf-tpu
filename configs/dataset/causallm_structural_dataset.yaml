@@ -1,4 +1,4 @@
-_target_: src.datasets.llm_dataset.StructuralDataset
+_target_: src.datasets.causallm_dataset.StructuralDataset
 data_path: ${connected_dir}/data
 split: ${split.train}
 split_ratio: ${split_ratio}

@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - dataset: llm_structural_dataset
+  - dataset: causallm_structural_dataset
   - scheduler: cosine_custom_scheduler
 
 package_name: llm-fine-tune-hf-tpu
