@@ -65,7 +65,7 @@ class StructuralDataset(Dataset):
 
     def get_dataset(self) -> Dict[str, List[Any]]:
         if self.split in ["train", "val"]:
-            parquet_path = f"{self.data_path}/train.parquet"
+            parquet_path = f"{self.data_path}/sample_train.parquet"
             data = pd.read_parquet(parquet_path)
             data = data.fillna("_")
             train_data, val_data = train_test_split(
