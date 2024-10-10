@@ -5,13 +5,14 @@ from omegaconf import DictConfig
 import torch
 from torch.utils.data import DataLoader
 from torch import optim
+from torch.distributed import checkpoint as dist_cp
 
 from torch_xla import runtime as xr
 from torch_xla.core import xla_model as xm
 from torch_xla.distributed import parallel_loader
 from torch_xla.experimental.xla_sharding import Mesh
 from torch_xla.experimental import xla_sharding as xs
-from torch_xla.utils import serialization as xser
+from torch_xla.experimental import distributed_checkpoint as xc
 
 from transformers import AutoModelForCausalLM
 
@@ -141,13 +142,19 @@ def train_loop(
                         accumulation_loss = 0.0
 
                     if global_step % config.save_steps == 0:
-                        xm.rendezvous(f"saving checkpoint-{global_step}.pt")
-                        if xm.is_master_ordinal():
-                            xser.save(
-                                model.state_dict(),
-                                f"saving checkpoint-{global_step}.pt",
-                            )
-                        xm.rendezvous(
+                        xm.rendezvous(f"saving checkpoint-{global_step}")
+                        state_dict = {
+                            "model": model.state_dict(),
+                            "optimizer": optimizer.state_dict(),
+                        }
+                        dist_cp.save(
+                            state_dict=state_dict,
+                            storage_writer=dist_cp.FileSystemWriter(
+                                f"{config.output_dir}/checkpoint-{global_step}"
+                            ),
+                            planner=xc.SPMDSavePlanner(),
+                        )
+                        xm.master_print(
                             f"checkpoint-{global_step} saved at {config.output_dir}"
                         )
 
