@@ -3,9 +3,10 @@ defaults:
   - dataset: causallm_structural_dataset
   - scheduler: cosine_custom_scheduler
 
-package_name: llm-fine-tune-hf-tpu
-project_dir: ${oc.env:PROJECT_DIR}/${package_name}
-connected_dir: ${oc.env:CONNECTED_DIR}/llm-korean-fine-tune
+package_name: llm-fine-tune-tpu
+project_dir: ${oc.env:BASE_DIR}/${package_name}
+data_dir: ${oc.env:BASE_DIR}/data
+mounted_dir: ${oc.env:BASE_DIR}/mount
 
 mode: train
 
@@ -38,12 +39,12 @@ gradient_accumulation_steps: 32
 tpu_num_cores: 32
 evaluation_strategy: epoch
 num_train_epochs: 5
-output_dir: ${connected_dir}/checkpoints
+output_dir: ${mounted_dir}/checkpoints
 save_strategy: steps
 save_steps: 1000
 save_total_limit: None
 logging_strategy: steps
 logging_steps: 10
-logging_dir: ${connected_dir}/logs
+logging_dir: ${mounted_dir}/logs
 report_to: wandb
 push_to_hub: False
