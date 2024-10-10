@@ -47,6 +47,7 @@ def train(
         batch_size=config.per_device_train_batch_size,
         shuffle=True,
         pin_memory=True,
+        drop_last=True,
     )
 
     val_loader = DataLoader(
@@ -54,6 +55,7 @@ def train(
         batch_size=config.per_device_eval_batch_size,
         shuffle=False,
         pin_memory=True,
+        drop_last=True,
     )
 
     optimizer = optim.AdamW(
